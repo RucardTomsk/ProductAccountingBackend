@@ -14,8 +14,8 @@ type ServiceError struct {
 	Err     error
 }
 
-// NewNeo4jWriteError returns ServiceError with general write error message.
-func NewNeo4jWriteError(err error) *ServiceError {
+// NewPostgresWriteError returns ServiceError with general write error message.
+func NewPostgresWriteError(err error) *ServiceError {
 	return &ServiceError{
 		Err:     err,
 		Blame:   BlamePostgres,
@@ -24,8 +24,8 @@ func NewNeo4jWriteError(err error) *ServiceError {
 	}
 }
 
-// NewNeo4jReadError returns ServiceError with general read error message.
-func NewNeo4jReadError(err error) *ServiceError {
+// NewPostgresReadError returns ServiceError with general read error message.
+func NewPostgresReadError(err error) *ServiceError {
 	return &ServiceError{
 		Err:     err,
 		Blame:   BlamePostgres,

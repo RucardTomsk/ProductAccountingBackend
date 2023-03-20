@@ -6,13 +6,19 @@ import (
 )
 
 type Container struct {
-	AuthController *AuthController
+	AuthController      *AuthController
+	ChapterController   *ChapterController
+	ComponentController *ComponentController
 }
 
 func NewControllerContainer(
 	logger *zap.Logger,
-	authService *service.AuthService) *Container {
+	authService *service.AuthService,
+	chapterService *service.ChapterService,
+	componentService *service.ComponentService) *Container {
 	return &Container{
-		AuthController: NewAuthController(logger, authService),
+		AuthController:      NewAuthController(logger, authService),
+		ChapterController:   NewChapterController(logger, chapterService),
+		ComponentController: NewComponentController(logger, componentService),
 	}
 }

@@ -69,14 +69,20 @@ func main() {
 
 	// init storage
 	authStorage := dao.NewAuthStorage(db)
+	chapterStorage := dao.NewChapterStorage(db)
+	componentStorage := dao.NewComponentStorage(db)
 
 	// init services
 	authService := service.NewAuthService(authStorage)
+	chapterService := service.NewChapterService(chapterStorage)
+	componentService := service.NewComponentService(componentStorage, chapterStorage)
 
 	// init controllers
 	controllers := controller.NewControllerContainer(
 		logger,
-		authService)
+		authService,
+		chapterService,
+		componentService)
 
 	handler := router.NewRouter(cfg)
 	srv := new(server.Server)
@@ -84,7 +90,6 @@ func main() {
 	go func() {
 		if err := srv.Run(cfg.Server.Host, cfg.Server.Port, handler.InitRoutes(
 			logger,
-			authService,
 			controllers)); err != nil {
 			logger.Error(fmt.Sprintf("error accured while running http server: %s", err.Error()))
 		}

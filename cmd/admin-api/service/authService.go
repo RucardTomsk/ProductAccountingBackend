@@ -43,7 +43,7 @@ func (s *AuthService) Register(request *model.RegisterRequest) (*uuid.UUID, *bas
 	}
 
 	if err := s.storage.CreateUser(&user); err != nil {
-		return nil, base.NewNeo4jWriteError(err)
+		return nil, base.NewPostgresWriteError(err)
 	}
 
 	return &user.ID, nil
@@ -52,7 +52,7 @@ func (s *AuthService) Register(request *model.RegisterRequest) (*uuid.UUID, *bas
 func (s *AuthService) Login(request *model.AuthRequest) (*model.Token, *base.ServiceError) {
 	user, err := s.storage.GetUser(request.Email, encryptString(request.Password))
 	if err != nil {
-		return nil, base.NewNeo4jReadError(err)
+		return nil, base.NewPostgresReadError(err)
 	}
 	if user == nil {
 		return nil, base.NewNotFoundError(err)

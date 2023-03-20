@@ -6,7 +6,6 @@ import (
 	"go.uber.org/zap"
 	"productAccounting-v1/cmd/admin-api/api/controller"
 	"productAccounting-v1/cmd/admin-api/config"
-	"productAccounting-v1/cmd/admin-api/service"
 	"productAccounting-v1/internal/api/middleware"
 	"productAccounting-v1/internal/common"
 
@@ -26,7 +25,6 @@ func NewRouter(config config.Config) *Router {
 
 func (r *Router) InitRoutes(
 	logger *zap.Logger,
-	authService *service.AuthService,
 	container *controller.Container) *gin.Engine {
 
 	gin.SetMode(r.config.Server.GinMode)
@@ -46,6 +44,23 @@ func (r *Router) InitRoutes(
 	{
 		user.POST("register", container.AuthController.AddUser)
 		user.POST("login", container.AuthController.Login)
+	}
+
+	chapter := v1.Group("chapter")
+	{
+		chapter.POST("create", container.AuthController.MiddlewareCheckAdmin, container.ChapterController.CreateChapter)
+		chapter.POST(":chapter-id/update", container.AuthController.MiddlewareCheckAdmin, container.ChapterController.UpdateChapter)
+		chapter.POST(":chapter-id/subchapter/add", container.AuthController.MiddlewareCheckAdmin, container.ChapterController.CreateSubchapter)
+		chapter.POST(":chapter-id/delete", container.AuthController.MiddlewareCheckAdmin, container.ChapterController.DeleteChapter)
+		chapter.GET("get", container.AuthController.MiddlewareCheckAdmin, container.ChapterController.GetChapters)
+		chapter.GET(":chapter-id/component/get", container.AuthController.MiddlewareCheckAdmin, container.ChapterController.GetComponents)
+	}
+
+	component := v1.Group("component")
+	{
+		component.POST("chapter/:chapter-id/create", container.AuthController.MiddlewareCheckAdmin, container.ComponentController.CreateComponent)
+		component.POST(":component-id/add", container.AuthController.MiddlewareCheckAdmin, container.ComponentController.AddComponent)
+		component.POST(":component-id/delete", container.AuthController.MiddlewareCheckAdmin, container.ComponentController.DeleteComponent)
 	}
 
 	return router

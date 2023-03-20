@@ -8,6 +8,7 @@ type Chapter struct {
 	base.EntityWithGuidKey
 	Name string `json:"name"`
 
-	Chapters   []Chapter   `gorm:"many2many:chapter_chapter;"`
+	IsChild    bool        `json:"isChild" gorm:"default:false;"`
+	Subchapter []*Chapter  `gorm:"many2many:chapter_subchapter"`
 	Components []Component `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
 }
