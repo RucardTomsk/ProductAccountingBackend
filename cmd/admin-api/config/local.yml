@@ -1,0 +1,11 @@
+---
+neo4j:
+  host: "bolt://192.168.1.117"
+  port: "7687"
+  user: "accountingBot"
+  password: "contrelspawn123"
+  dataBaseName: "productaccounting"
+
+server:
+  host: "localhost"
+  port: "8080"
