@@ -4,6 +4,8 @@ import (
 	"context"
 	"fmt"
 	"github.com/spf13/viper"
+	"gorm.io/driver/postgres"
+	"gorm.io/gorm"
 	"os"
 	"os/signal"
 	"productAccounting-v1/cmd/admin-api/api/controller"
@@ -12,7 +14,7 @@ import (
 	"productAccounting-v1/cmd/admin-api/docs"
 	"productAccounting-v1/cmd/admin-api/service"
 	"productAccounting-v1/cmd/admin-api/storage/dao"
-	"productAccounting-v1/cmd/admin-api/storage/driver"
+	"productAccounting-v1/cmd/admin-api/storage/migration"
 	"productAccounting-v1/internal/common"
 	"productAccounting-v1/internal/server"
 	"productAccounting-v1/internal/telemetry/log"
@@ -49,14 +51,24 @@ func main() {
 	docs.SwaggerInfo.BasePath = swaggerConfig.BasePath
 	docs.SwaggerInfo.Schemes = swaggerConfig.Schemes
 
-	neoDriver, err := driver.NewNeo4jDriver(&cfg.Neo4j)
+	// init connections
+	dsn := fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%d sslmode=disable",
+		cfg.Postgres.Host, cfg.Postgres.User, cfg.Postgres.Password, cfg.Postgres.Name, cfg.Postgres.Port)
+
+	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 
 	if err != nil {
 		logger.Fatal(fmt.Sprintf("can't connect to database: %v", err))
 	}
 
+	err = migration.Migrate(db)
+	if err != nil {
+		logger.Fatal(fmt.Sprintf("failed to migrate database: %v", err))
+	}
+	logger.Info("database migrated successfully")
+
 	// init storage
-	authStorage := dao.NewAuthStorage(neoDriver)
+	authStorage := dao.NewAuthStorage(db)
 
 	// init services
 	authService := service.NewAuthService(authStorage)

@@ -98,6 +98,15 @@ func NewJsonMarshalError(err error) *ServiceError {
 	}
 }
 
+func NewJWTParseError(err error, message string) *ServiceError {
+	return &ServiceError{
+		Err:     err,
+		Blame:   BlameUser,
+		Code:    http.StatusBadRequest,
+		Message: message,
+	}
+}
+
 func (e *ServiceError) Error() string {
 	return fmt.Sprintf("[%d] %v (blame: %s)", e.Code, e.Err, e.Blame)
 }

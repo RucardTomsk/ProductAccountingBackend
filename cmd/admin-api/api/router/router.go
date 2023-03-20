@@ -45,6 +45,7 @@ func (r *Router) InitRoutes(
 	user := v1.Group("user")
 	{
 		user.POST("register", container.AuthController.AddUser)
+		user.POST("login", container.AuthController.Login)
 	}
 
 	return router

@@ -1,15 +1,14 @@
 package entity
 
 import (
-	"github.com/google/uuid"
-	"productAccounting-v1/internal/domain/enum"
+	"productAccounting-v1/internal/domain/base"
 )
 
 type User struct {
-	ID uuid.UUID
+	base.EntityWithGuidKey
 
-	Password string
-	Email    string
+	Password string `json:"password"`
+	Email    string `json:"email" gorm:"uniqueIndex"`
 
-	Role enum.Roles
+	Role string `json:"role"`
 }
