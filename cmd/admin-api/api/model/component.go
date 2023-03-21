@@ -24,6 +24,10 @@ type (
 		Price  float64
 	}
 
+	UseComponentRequest struct {
+		Weight float64
+	}
+
 	GetComponentsResponse struct {
 		base.ResponseOK
 		Components []ComponentObject

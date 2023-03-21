@@ -61,6 +61,18 @@ func (r *Router) InitRoutes(
 		component.POST("chapter/:chapter-id/create", container.AuthController.MiddlewareCheckAdmin, container.ComponentController.CreateComponent)
 		component.POST(":component-id/add", container.AuthController.MiddlewareCheckAdmin, container.ComponentController.AddComponent)
 		component.POST(":component-id/delete", container.AuthController.MiddlewareCheckAdmin, container.ComponentController.DeleteComponent)
+		component.POST(":component-id/update", container.AuthController.MiddlewareCheckAdmin, container.ComponentController.UpdateComponent)
+		component.POST(":component-id/use", container.AuthController.MiddlewareCheckAdmin, container.ComponentController.UseComponent)
+	}
+
+	product := v1.Group("product")
+	{
+		product.POST("create", container.AuthController.MiddlewareCheckAdmin, container.ProductController.CreateProduct)
+		product.POST(":product-id/update", container.AuthController.MiddlewareCheckAdmin, container.ProductController.UpdateProduct)
+		product.POST("assembly/:assembly-id/add", container.AuthController.MiddlewareCheckAdmin, container.ProductController.AddAssembly)
+		product.POST("assembly/:assembly-id/component/component-id/add", container.AuthController.MiddlewareCheckAdmin, container.ProductController.AddComponentToAssembly)
+		product.GET(":product-id/get", container.AuthController.MiddlewareCheckAdmin, container.ProductController.GetProduct)
+		product.GET("assembly/:assembly-id/component/get", container.AuthController.MiddlewareCheckAdmin, container.ProductController.GetAssemblyComponent)
 	}
 
 	return router

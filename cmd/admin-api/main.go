@@ -71,18 +71,21 @@ func main() {
 	authStorage := dao.NewAuthStorage(db)
 	chapterStorage := dao.NewChapterStorage(db)
 	componentStorage := dao.NewComponentStorage(db)
+	productStorage := dao.NewProductStorage(db)
 
 	// init services
 	authService := service.NewAuthService(authStorage)
 	chapterService := service.NewChapterService(chapterStorage)
 	componentService := service.NewComponentService(componentStorage, chapterStorage)
+	productService := service.NewProductService(productStorage, componentStorage)
 
 	// init controllers
 	controllers := controller.NewControllerContainer(
 		logger,
 		authService,
 		chapterService,
-		componentService)
+		componentService,
+		productService)
 
 	handler := router.NewRouter(cfg)
 	srv := new(server.Server)

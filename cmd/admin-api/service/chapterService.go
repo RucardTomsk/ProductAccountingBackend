@@ -94,11 +94,13 @@ func (s *ChapterService) GetChapters() ([]model.ChapterObject, *base.ServiceErro
 		subchapters := make([]model.ChapterObject, len(chapter.Subchapter))
 		for _, subchapter := range chapter.Subchapter {
 			subchapters = append(subchapters, model.ChapterObject{
+				ID:   subchapter.ID,
 				Name: subchapter.Name,
 			})
 		}
 
 		result = append(result, model.ChapterObject{
+			ID:         chapter.ID,
 			Name:       chapter.Name,
 			Subchapter: subchapters,
 		})
@@ -120,6 +122,7 @@ func (s *ChapterService) GetComponents(id *uuid.UUID) ([]model.ComponentObject, 
 
 	for _, component := range components {
 		result = append(result, model.ComponentObject{
+			ID:     component.ID,
 			Name:   component.Name,
 			Price:  component.Price,
 			Weight: component.Weight,

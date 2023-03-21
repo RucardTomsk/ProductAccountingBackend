@@ -46,6 +46,24 @@ func (s *ComponentService) CreateComponent(chapterID *uuid.UUID, request *model.
 	return &component.ID, nil
 }
 
+func (s *ComponentService) UpdateComponent(componentID *uuid.UUID, request *model.UpdateComponent) *base.ServiceError {
+	component, err := s.storage.RetrieveComponent(componentID)
+	if err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return base.NewNotFoundError(err)
+		}
+		return base.NewPostgresReadError(err)
+	}
+
+	component.Name = request.Name
+
+	if err := s.storage.UpdateComponent(component); err != nil {
+		return base.NewPostgresWriteError(err)
+	}
+
+	return nil
+}
+
 func (s *ComponentService) AddComponent(componentID *uuid.UUID, request *model.UpdateComponent) *base.ServiceError {
 	component, err := s.storage.RetrieveComponent(componentID)
 	if err != nil {
@@ -56,14 +74,31 @@ func (s *ComponentService) AddComponent(componentID *uuid.UUID, request *model.U
 	}
 
 	if enum.ParseTypeWeight(request.TypeWeight) == enum.KG {
-		priseToG := request.Price / (request.Weight * 1000)
+		component.Price = (request.Price + (request.Price * 0.15)) / (request.Weight * 1000)
 		component.Weight = component.Weight + request.Weight*1000
-		component.Price = component.Weight * priseToG
 	} else {
-		priseToG := request.Price / request.Weight
+		component.Price = (request.Price + (request.Price * 0.15)) / request.Weight
 		component.Weight = component.Weight + request.Weight
-		component.Price = component.Weight * priseToG
 	}
+
+	if err := s.storage.UpdateComponent(component); err != nil {
+		return base.NewPostgresWriteError(err)
+	}
+
+	return nil
+}
+
+func (s *ComponentService) UseComponent(componentID *uuid.UUID, request *model.UseComponentRequest) *base.ServiceError {
+	component, err := s.storage.RetrieveComponent(componentID)
+	if err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return base.NewNotFoundError(err)
+		}
+		return base.NewPostgresReadError(err)
+	}
+
+	component.Weight = component.Weight - request.Weight
+	component.Price = component.Weight * component.Price
 
 	if err := s.storage.UpdateComponent(component); err != nil {
 		return base.NewPostgresWriteError(err)
