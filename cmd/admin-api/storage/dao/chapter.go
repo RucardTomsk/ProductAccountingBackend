@@ -57,12 +57,28 @@ func (s *ChapterStorage) GetComponents(id *uuid.UUID) ([]entity.Component, error
 }
 
 func (s *ChapterStorage) DeleteChapter(id *uuid.UUID) error {
+	var chapter entity.Chapter
+	err := s.db.Preload("Subchapter").First(&chapter, id).Error
+	if err != nil {
+		return nil
+	}
+
 	tx := s.db.Delete(&entity.Chapter{}, id)
 	if tx.Error != nil {
 		return tx.Error
 	}
 	if tx.RowsAffected == 0 {
 		return gorm.ErrRecordNotFound
+	}
+
+	for _, subchapter := range chapter.Subchapter {
+		tx := s.db.Delete(&entity.Chapter{}, subchapter.ID)
+		if tx.Error != nil {
+			return tx.Error
+		}
+		if tx.RowsAffected == 0 {
+			return gorm.ErrRecordNotFound
+		}
 	}
 	return nil
 }

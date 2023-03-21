@@ -3,6 +3,7 @@ package service
 import (
 	"github.com/google/uuid"
 	"gorm.io/gorm"
+	"math"
 	"productAccounting-v1/cmd/admin-api/api/model"
 	"productAccounting-v1/cmd/admin-api/storage/dao"
 	"productAccounting-v1/internal/domain/base"
@@ -74,10 +75,10 @@ func (s *ComponentService) AddComponent(componentID *uuid.UUID, request *model.U
 	}
 
 	if enum.ParseTypeWeight(request.TypeWeight) == enum.KG {
-		component.Price = (request.Price + (request.Price * 0.15)) / (request.Weight * 1000)
+		component.Price = math.Ceil((request.Price+(request.Price*0.15))/(request.Weight*1000)*100) / 100
 		component.Weight = component.Weight + request.Weight*1000
 	} else {
-		component.Price = (request.Price + (request.Price * 0.15)) / request.Weight
+		component.Price = math.Ceil((request.Price+(request.Price*0.15))/request.Weight*100) / 100
 		component.Weight = component.Weight + request.Weight
 	}
 

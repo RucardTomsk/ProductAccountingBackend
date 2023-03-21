@@ -88,10 +88,10 @@ func (s *ChapterService) GetChapters() ([]model.ChapterObject, *base.ServiceErro
 		return nil, base.NewPostgresReadError(err)
 	}
 
-	result := make([]model.ChapterObject, len(chapters))
+	result := make([]model.ChapterObject, 0, len(chapters))
 
 	for _, chapter := range chapters {
-		subchapters := make([]model.ChapterObject, len(chapter.Subchapter))
+		subchapters := make([]model.ChapterObject, 0, len(chapter.Subchapter))
 		for _, subchapter := range chapter.Subchapter {
 			subchapters = append(subchapters, model.ChapterObject{
 				ID:   subchapter.ID,
@@ -118,7 +118,7 @@ func (s *ChapterService) GetComponents(id *uuid.UUID) ([]model.ComponentObject, 
 		return nil, base.NewPostgresReadError(err)
 	}
 
-	result := make([]model.ComponentObject, len(components))
+	result := make([]model.ComponentObject, 0, len(components))
 
 	for _, component := range components {
 		result = append(result, model.ComponentObject{

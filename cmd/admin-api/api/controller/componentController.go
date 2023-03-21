@@ -80,7 +80,7 @@ func (a *ComponentController) AddComponent(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, base.ResponseOKWithID{
+	c.JSON(http.StatusOK, base.ResponseOK{
 		Status:     http.StatusText(http.StatusOK),
 		TrackingID: middleware.GetTrackingId(c),
 	})
@@ -102,7 +102,7 @@ func (a *ComponentController) DeleteComponent(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, base.ResponseOKWithID{
+	c.JSON(http.StatusOK, base.ResponseOK{
 		Status:     http.StatusText(http.StatusOK),
 		TrackingID: middleware.GetTrackingId(c),
 	})
@@ -131,7 +131,7 @@ func (a *ComponentController) UpdateComponent(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, base.ResponseOKWithID{
+	c.JSON(http.StatusOK, base.ResponseOK{
 		Status:     http.StatusText(http.StatusOK),
 		TrackingID: middleware.GetTrackingId(c),
 	})
@@ -160,7 +160,7 @@ func (a *ComponentController) UseComponent(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, base.ResponseOKWithID{
+	c.JSON(http.StatusOK, base.ResponseOK{
 		Status:     http.StatusText(http.StatusOK),
 		TrackingID: middleware.GetTrackingId(c),
 	})

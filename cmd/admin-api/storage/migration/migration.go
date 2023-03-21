@@ -11,6 +11,8 @@ func Migrate(db *gorm.DB) error {
 		&entity.User{},
 		&entity.Component{},
 		&entity.Chapter{},
+		&entity.Assembly{},
+		&entity.Product{},
 	)
 
 	if err != nil {

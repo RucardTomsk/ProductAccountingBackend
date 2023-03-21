@@ -9,6 +9,6 @@ type Chapter struct {
 	Name string `json:"name"`
 
 	IsChild    bool        `json:"isChild" gorm:"default:false;"`
-	Subchapter []*Chapter  `gorm:"many2many:chapter_subchapter"`
+	Subchapter []*Chapter  `gorm:"many2many:chapter_subchapter;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
 	Components []Component `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
 }
