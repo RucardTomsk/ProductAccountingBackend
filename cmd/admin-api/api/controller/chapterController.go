@@ -96,15 +96,17 @@ func (a *ChapterController) CreateSubchapter(c *gin.Context) {
 		return
 	}
 
-	if serviceErr := a.service.AddSubchapter(&chapterID, &payload); serviceErr != nil {
+	id, serviceErr := a.service.AddSubchapter(&chapterID, &payload)
+	if serviceErr != nil {
 		log.Warn("error occurred: " + serviceErr.Error())
 		c.JSON(serviceErr.Code, api.ResponseFromServiceError(*serviceErr, middleware.GetTrackingId(c)))
 		return
 	}
 
-	c.JSON(http.StatusOK, base.ResponseOK{
+	c.JSON(http.StatusOK, base.ResponseOKWithID{
 		Status:     http.StatusText(http.StatusOK),
 		TrackingID: middleware.GetTrackingId(c),
+		ID:         *id,
 	})
 }
 

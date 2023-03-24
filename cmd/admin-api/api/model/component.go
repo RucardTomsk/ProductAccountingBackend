@@ -7,29 +7,29 @@ import (
 
 type (
 	CreateComponentRequest struct {
-		Name string
+		Name string `json:"name"`
 	}
 
 	UpdateComponent struct {
-		Name       string
-		Weight     float64
-		Price      float64
-		TypeWeight string
+		Name       string  `json:"name"`
+		Weight     float64 `json:"weight"`
+		Price      float64 `json:"price"`
+		TypeWeight string  `json:"typeWeight"`
 	}
 
 	ComponentObject struct {
-		ID     uuid.UUID
-		Name   string
-		Weight float64
-		Price  float64
+		ID     uuid.UUID `json:"id"`
+		Name   string    `json:"name"`
+		Weight float64   `json:"weight"`
+		Price  float64   `json:"price"`
 	}
 
 	UseComponentRequest struct {
-		Weight float64
+		Weight float64 `json:"weight"`
 	}
 
 	GetComponentsResponse struct {
 		base.ResponseOK
-		Components []ComponentObject
+		Components []ComponentObject `json:"components"`
 	}
 )

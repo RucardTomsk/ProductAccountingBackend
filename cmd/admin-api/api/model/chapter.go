@@ -7,23 +7,23 @@ import (
 
 type (
 	CreateChapterRequest struct {
-		Name string
+		Name string `json:"name"`
 	}
 
 	UpdateChapterRequest struct {
-		Name string
+		Name string `json:"name"`
 	}
 
 	ChapterObject struct {
-		ID   uuid.UUID
-		Name string
+		ID   uuid.UUID `json:"id"`
+		Name string    `json:"name"`
 
-		Subchapter []ChapterObject
-		Components []ComponentObject
+		Subchapter []ChapterObject   `json:"subchapter"`
+		Components []ComponentObject `json:"components"`
 	}
 
 	GetChaptersResponse struct {
 		base.ResponseOK
-		Chapters []ChapterObject
+		Chapters []ChapterObject `json:"chapters"`
 	}
 )

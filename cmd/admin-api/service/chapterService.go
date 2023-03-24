@@ -49,10 +49,10 @@ func (s *ChapterService) UpdateChapter(chapterID *uuid.UUID, request *model.Upda
 	return nil
 }
 
-func (s *ChapterService) AddSubchapter(chapterID *uuid.UUID, request *model.CreateChapterRequest) *base.ServiceError {
+func (s *ChapterService) AddSubchapter(chapterID *uuid.UUID, request *model.CreateChapterRequest) (*uuid.UUID, *base.ServiceError) {
 	chapter, err := s.storage.RetrieveChapter(chapterID)
 	if err != nil {
-		return base.NewPostgresReadError(err)
+		return nil, base.NewPostgresReadError(err)
 	}
 
 	subchapter := &entity.Chapter{
@@ -63,10 +63,10 @@ func (s *ChapterService) AddSubchapter(chapterID *uuid.UUID, request *model.Crea
 	chapter.Subchapter = append(chapter.Subchapter, subchapter)
 
 	if err := s.storage.UpdateChapter(chapter); err != nil {
-		return base.NewPostgresReadError(err)
+		return nil, base.NewPostgresReadError(err)
 	}
 
-	return nil
+	return &subchapter.ID, nil
 }
 
 func (s *ChapterService) DeleteChapter(id *uuid.UUID) *base.ServiceError {

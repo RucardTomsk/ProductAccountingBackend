@@ -32,6 +32,13 @@ func NewAuthController(
 	}
 }
 
+func (a *AuthController) Test(c *gin.Context) {
+	c.JSON(http.StatusOK, base.ResponseOK{
+		Status:     http.StatusText(http.StatusOK),
+		TrackingID: middleware.GetTrackingId(c),
+	})
+}
+
 func (a *AuthController) MiddlewareCheckAdmin(c *gin.Context) {
 	header := c.GetHeader(authorizationHeader)
 

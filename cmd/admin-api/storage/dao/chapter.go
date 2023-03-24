@@ -42,6 +42,7 @@ func (s *ChapterStorage) GetChapters() ([]entity.Chapter, error) {
 	err := s.db.Model(&entity.Chapter{}).
 		Preload("Subchapter").
 		Where("is_child = ?", false).
+		Order("created_at asc").
 		Find(&chapters).Error
 
 	return chapters, err

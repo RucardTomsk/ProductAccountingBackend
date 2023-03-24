@@ -2,14 +2,14 @@ package model
 
 type (
 	AuthRequest struct {
-		Email    string
-		Password string
+		Email    string `json:"email"`
+		Password string `json:"password"`
 	}
 
 	RegisterRequest struct {
-		Email    string
-		Password string
-		Role     string
+		Email    string `json:"email"`
+		Password string `json:"password"`
+		Role     string `json:"role"`
 	}
 
 	Token struct {

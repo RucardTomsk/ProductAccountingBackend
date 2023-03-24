@@ -7,41 +7,41 @@ import (
 
 type (
 	CreateProductRequest struct {
-		Name        string
-		Description string
+		Name        string `json:"name"`
+		Description string `json:"description"`
 	}
 
 	UpdateProductRequest struct {
-		Name        string
-		Description string
+		Name        string `json:"name"`
+		Description string `json:"description"`
 	}
 
 	CreateAssemblyRequest struct {
-		Name   string
-		Weight float64
+		Name   string  `json:"name"`
+		Weight float64 `json:"weight"`
 	}
 
 	AssemblyObject struct {
-		ID         uuid.UUID
-		Name       string
-		Weight     float64
-		Components []ComponentObject
+		ID         uuid.UUID         `json:"id"`
+		Name       string            `json:"name"`
+		Weight     float64           `json:"weight"`
+		Components []ComponentObject `json:"components"`
 	}
 
 	ProductObject struct {
-		ID          uuid.UUID
-		Name        string
-		Description string
-		Assembles   []AssemblyObject
+		ID          uuid.UUID        `json:"id"`
+		Name        string           `json:"name"`
+		Description string           `json:"description"`
+		Assembles   []AssemblyObject `json:"assembles"`
 	}
 
 	GetAssemblesResponse struct {
 		base.ResponseOK
-		Assembles []AssemblyObject
+		Assembles []AssemblyObject `json:"assembles"`
 	}
 
 	GetProductResponse struct {
 		base.ResponseOK
-		Products []ProductObject
+		Products []ProductObject `json:"products"`
 	}
 )

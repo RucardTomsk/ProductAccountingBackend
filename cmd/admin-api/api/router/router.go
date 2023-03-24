@@ -44,6 +44,7 @@ func (r *Router) InitRoutes(
 	{
 		user.POST("register", container.AuthController.AddUser)
 		user.POST("login", container.AuthController.Login)
+		user.POST("test", container.AuthController.MiddlewareCheckAdmin, container.AuthController.Test)
 	}
 
 	chapter := v1.Group("chapter")
