@@ -32,4 +32,9 @@ type (
 		base.ResponseOK
 		Components []ComponentObject `json:"components"`
 	}
+
+	GetComponentURLResponse struct {
+		base.ResponseOK
+		URL string
+	}
 )

@@ -3,6 +3,8 @@ package main
 import (
 	"context"
 	"fmt"
+	"github.com/minio/minio-go/v7"
+	"github.com/minio/minio-go/v7/pkg/credentials"
 	"github.com/spf13/viper"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -16,6 +18,7 @@ import (
 	"productAccounting-v1/cmd/admin-api/storage/dao"
 	"productAccounting-v1/cmd/admin-api/storage/migration"
 	"productAccounting-v1/internal/common"
+	"productAccounting-v1/internal/s3"
 	"productAccounting-v1/internal/server"
 	"productAccounting-v1/internal/telemetry/log"
 
@@ -51,6 +54,16 @@ func main() {
 	docs.SwaggerInfo.BasePath = swaggerConfig.BasePath
 	docs.SwaggerInfo.Schemes = swaggerConfig.Schemes
 
+	//init s3
+	minioClient, err := minio.New("minio.freydin.space", &minio.Options{
+		Creds:  credentials.NewStaticV4("rucard", "contrelspawn123", ""),
+		Secure: true,
+	})
+
+	minioComponentService := s3.NewMinioService(minioClient, "accounting", "minio.freydin.space")
+	if err != nil {
+		logger.Fatal(fmt.Sprintf("can't connect to s3: %v", err))
+	}
 	// init connections
 	dsn := fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%d sslmode=disable",
 		cfg.Postgres.Host, cfg.Postgres.User, cfg.Postgres.Password, cfg.Postgres.Name, cfg.Postgres.Port)
@@ -76,7 +89,7 @@ func main() {
 	// init services
 	authService := service.NewAuthService(authStorage)
 	chapterService := service.NewChapterService(chapterStorage)
-	componentService := service.NewComponentService(componentStorage, chapterStorage)
+	componentService := service.NewComponentService(componentStorage, chapterStorage, minioComponentService)
 	productService := service.NewProductService(productStorage, componentStorage)
 
 	// init controllers

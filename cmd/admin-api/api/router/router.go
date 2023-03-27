@@ -64,6 +64,8 @@ func (r *Router) InitRoutes(
 		component.POST(":component-id/delete", container.AuthController.MiddlewareCheckAdmin, container.ComponentController.DeleteComponent)
 		component.POST(":component-id/update", container.AuthController.MiddlewareCheckAdmin, container.ComponentController.UpdateComponent)
 		component.POST(":component-id/use", container.AuthController.MiddlewareCheckAdmin, container.ComponentController.UseComponent)
+		component.POST(":component-id/uploadImage", container.ComponentController.UploadImage)
+		component.GET(":component-id/getURL", container.ComponentController.GetURLFile)
 	}
 
 	product := v1.Group("product")

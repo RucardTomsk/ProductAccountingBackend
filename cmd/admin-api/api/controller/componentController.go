@@ -165,3 +165,89 @@ func (a *ComponentController) UseComponent(c *gin.Context) {
 		TrackingID: middleware.GetTrackingId(c),
 	})
 }
+
+var IMAGE_TYPES = map[string]interface{}{
+	"image/jpeg": nil,
+	"image/png":  nil,
+}
+
+func (a *ComponentController) UploadImage(c *gin.Context) {
+	log := api.EnrichLogger(a.logger, c)
+
+	componentGUID := c.Params.ByName("component-id")
+
+	file, fileHeader, err := c.Request.FormFile("file")
+	if err != nil {
+		c.JSON(http.StatusBadRequest, struct {
+			Status string
+			MSG    string
+		}{Status: "error",
+			MSG: err.Error()})
+
+		return
+	}
+
+	defer file.Close()
+
+	buffer := make([]byte, fileHeader.Size)
+	_, err = file.Read(buffer)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, struct {
+			Status string
+			MSG    string
+		}{Status: "error",
+			MSG: "file type is not supported"})
+		return
+	}
+
+	fileType := http.DetectContentType(buffer)
+	if _, ex := IMAGE_TYPES[fileType]; !ex {
+		c.JSON(http.StatusBadRequest, struct {
+			Status string
+			MSG    string
+		}{Status: "error",
+			MSG: "file type is not supported"})
+		return
+	}
+
+	if _, err := file.Seek(0, 0); err != nil {
+		c.JSON(http.StatusBadRequest, struct {
+			Status string
+			MSG    string
+		}{Status: "error",
+			MSG: "file error"})
+		return
+	}
+
+	if serviceErr := a.service.UploadImage(c.Request.Context(), file, fileHeader.Size, fileType, "component/"+componentGUID); serviceErr != nil {
+		log.Warn("error occurred: " + serviceErr.Error())
+		c.JSON(serviceErr.Code, api.ResponseFromServiceError(*serviceErr, middleware.GetTrackingId(c)))
+		return
+	}
+
+	c.JSON(http.StatusOK, base.ResponseOK{
+		Status:     http.StatusText(http.StatusOK),
+		TrackingID: middleware.GetTrackingId(c),
+	})
+}
+
+func (a *ComponentController) GetURLFile(c *gin.Context) {
+	log := api.EnrichLogger(a.logger, c)
+
+	componentGUID := c.Params.ByName("component-id")
+
+	URL, serviceErr := a.service.GetURLImage(c.Request.Context(), "component/"+componentGUID)
+	if serviceErr != nil {
+		log.Warn("error occurred: " + serviceErr.Error())
+		c.JSON(serviceErr.Code, api.ResponseFromServiceError(*serviceErr, middleware.GetTrackingId(c)))
+		return
+	}
+
+	c.JSON(http.StatusOK, model.GetComponentURLResponse{
+		ResponseOK: base.ResponseOK{
+			Status:     http.StatusText(http.StatusOK),
+			TrackingID: middleware.GetTrackingId(c),
+		},
+		URL: *URL,
+	})
+}

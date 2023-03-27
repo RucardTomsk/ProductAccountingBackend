@@ -1,26 +1,32 @@
 package service
 
 import (
+	"context"
 	"github.com/google/uuid"
 	"gorm.io/gorm"
+	"io"
 	"math"
 	"productAccounting-v1/cmd/admin-api/api/model"
 	"productAccounting-v1/cmd/admin-api/storage/dao"
 	"productAccounting-v1/internal/domain/base"
 	"productAccounting-v1/internal/domain/entity"
 	"productAccounting-v1/internal/domain/enum"
+	"productAccounting-v1/internal/s3"
 )
 
 type ComponentService struct {
 	storage        *dao.ComponentStorage
 	chapterStorage *dao.ChapterStorage
+	minioService   *s3.MinioService
 }
 
 func NewComponentService(storage *dao.ComponentStorage,
-	chapterStorage *dao.ChapterStorage) *ComponentService {
+	chapterStorage *dao.ChapterStorage,
+	minioService *s3.MinioService) *ComponentService {
 	return &ComponentService{
 		storage:        storage,
 		chapterStorage: chapterStorage,
+		minioService:   minioService,
 	}
 }
 
@@ -117,4 +123,26 @@ func (s *ComponentService) DeleteComponent(id *uuid.UUID) *base.ServiceError {
 	}
 
 	return nil
+}
+
+func (s *ComponentService) UploadImage(ctx context.Context, file io.Reader, size int64, contentType, nameFile string) *base.ServiceError {
+	if err := s.minioService.Upload(ctx, s3.UploadInput{
+		File:        file,
+		Size:        size,
+		ContentType: contentType,
+		Name:        nameFile,
+	}); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (s *ComponentService) GetURLImage(ctx context.Context, fileName string) (*string, *base.ServiceError) {
+	URL, err := s.minioService.GetFileURL(ctx, fileName)
+	if err != nil {
+		return nil, err
+	}
+
+	return URL, nil
 }
