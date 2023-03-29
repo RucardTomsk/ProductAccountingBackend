@@ -7,9 +7,10 @@ import (
 
 type Component struct {
 	base.EntityWithGuidKey
-	Name   string  `json:"name"`
-	Weight float64 `json:"weight" gorm:"default:0;"`
-	Price  float64 `json:"price" gorm:"default:0;"`
+	Name        string  `json:"name"`
+	Description string  `json:"description"`
+	Weight      float64 `json:"weight" gorm:"default:0;"`
+	Price       float64 `json:"price" gorm:"default:0;"`
 
 	ChapterID uuid.UUID `json:"chapterID"`
 	Chapter   *Chapter  `json:"chapter,omitempty"`

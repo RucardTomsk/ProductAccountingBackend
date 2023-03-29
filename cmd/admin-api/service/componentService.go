@@ -41,9 +41,10 @@ func (s *ComponentService) CreateComponent(chapterID *uuid.UUID, request *model.
 	}
 
 	component := &entity.Component{
-		Name:      request.Name,
-		Chapter:   chapter,
-		ChapterID: *chapterID,
+		Name:        request.Name,
+		Description: request.Description,
+		Chapter:     chapter,
+		ChapterID:   *chapterID,
 	}
 
 	if err := s.storage.CreateComponent(component); err != nil {
@@ -63,6 +64,7 @@ func (s *ComponentService) UpdateComponent(componentID *uuid.UUID, request *mode
 	}
 
 	component.Name = request.Name
+	component.Description = request.Description
 
 	if err := s.storage.UpdateComponent(component); err != nil {
 		return base.NewPostgresWriteError(err)
@@ -136,13 +138,4 @@ func (s *ComponentService) UploadImage(ctx context.Context, file io.Reader, size
 	}
 
 	return nil
-}
-
-func (s *ComponentService) GetURLImage(ctx context.Context, fileName string) (*string, *base.ServiceError) {
-	URL, err := s.minioService.GetFileURL(ctx, fileName)
-	if err != nil {
-		return nil, err
-	}
-
-	return URL, nil
 }

@@ -88,7 +88,7 @@ func main() {
 
 	// init services
 	authService := service.NewAuthService(authStorage)
-	chapterService := service.NewChapterService(chapterStorage)
+	chapterService := service.NewChapterService(chapterStorage, minioComponentService)
 	componentService := service.NewComponentService(componentStorage, chapterStorage, minioComponentService)
 	productService := service.NewProductService(productStorage, componentStorage)
 

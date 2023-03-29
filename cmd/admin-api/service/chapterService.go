@@ -1,21 +1,27 @@
 package service
 
 import (
+	"context"
 	"github.com/google/uuid"
 	"gorm.io/gorm"
 	"productAccounting-v1/cmd/admin-api/api/model"
 	"productAccounting-v1/cmd/admin-api/storage/dao"
 	"productAccounting-v1/internal/domain/base"
 	"productAccounting-v1/internal/domain/entity"
+	"productAccounting-v1/internal/s3"
 )
 
 type ChapterService struct {
-	storage *dao.ChapterStorage
+	storage      *dao.ChapterStorage
+	minioService *s3.MinioService
 }
 
-func NewChapterService(storage *dao.ChapterStorage) *ChapterService {
+func NewChapterService(
+	storage *dao.ChapterStorage,
+	minioService *s3.MinioService) *ChapterService {
 	return &ChapterService{
-		storage: storage,
+		storage:      storage,
+		minioService: minioService,
 	}
 }
 
@@ -121,11 +127,17 @@ func (s *ChapterService) GetComponents(id *uuid.UUID) ([]model.ComponentObject, 
 	result := make([]model.ComponentObject, 0, len(components))
 
 	for _, component := range components {
+		url, serviceErr := s.minioService.GetFileURL(context.TODO(), "component/"+component.ID.String())
+		if serviceErr != nil {
+			return nil, serviceErr
+		}
 		result = append(result, model.ComponentObject{
-			ID:     component.ID,
-			Name:   component.Name,
-			Price:  component.Price,
-			Weight: component.Weight,
+			ID:          component.ID,
+			Name:        component.Name,
+			Description: component.Description,
+			Price:       component.Price,
+			Weight:      component.Weight,
+			URL:         *url,
 		})
 	}
 

@@ -230,24 +230,3 @@ func (a *ComponentController) UploadImage(c *gin.Context) {
 		TrackingID: middleware.GetTrackingId(c),
 	})
 }
-
-func (a *ComponentController) GetURLFile(c *gin.Context) {
-	log := api.EnrichLogger(a.logger, c)
-
-	componentGUID := c.Params.ByName("component-id")
-
-	URL, serviceErr := a.service.GetURLImage(c.Request.Context(), "component/"+componentGUID)
-	if serviceErr != nil {
-		log.Warn("error occurred: " + serviceErr.Error())
-		c.JSON(serviceErr.Code, api.ResponseFromServiceError(*serviceErr, middleware.GetTrackingId(c)))
-		return
-	}
-
-	c.JSON(http.StatusOK, model.GetComponentURLResponse{
-		ResponseOK: base.ResponseOK{
-			Status:     http.StatusText(http.StatusOK),
-			TrackingID: middleware.GetTrackingId(c),
-		},
-		URL: *URL,
-	})
-}
