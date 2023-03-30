@@ -117,6 +117,15 @@ func (s *ComponentService) UseComponent(componentID *uuid.UUID, request *model.U
 }
 
 func (s *ComponentService) DeleteComponent(id *uuid.UUID) *base.ServiceError {
+	component, err := s.storage.RetrieveComponent(id)
+	if err != nil {
+		return base.NewPostgresReadError(err)
+	}
+
+	if serviceErr := s.minioService.RemoveImage(context.TODO(), "component/"+component.ID.String()); serviceErr != nil {
+		return serviceErr
+	}
+
 	if err := s.storage.DeleteComponent(id); err != nil {
 		if err == gorm.ErrRecordNotFound {
 			return base.NewNotFoundError(err)

@@ -72,6 +72,22 @@ func (s *MinioService) GetFileURL(ctx context.Context, fileName string) (*string
 	return &urlString, nil
 }
 
+func (s *MinioService) RemoveImage(ctx context.Context, fileName string) *base.ServiceError {
+	opts := minio.RemoveObjectOptions{
+		GovernanceBypass: true,
+	}
+
+	if err := s.client.RemoveObject(ctx, s.bucket, fileName+".png", opts); err != nil {
+		return unexpectedServiceError(err)
+	}
+
+	if err := s.client.RemoveObject(ctx, s.bucket, fileName+".jpeg", opts); err != nil {
+		return unexpectedServiceError(err)
+	}
+
+	return nil
+}
+
 // unexpectedServiceError returns any unclassified service error.
 func unexpectedServiceError(err error) *base.ServiceError {
 	return &base.ServiceError{
